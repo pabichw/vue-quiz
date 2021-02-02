@@ -1,6 +1,6 @@
 <template>
     <div>
-        <p>Quiz</p>
+        <h2>Quiz</h2>
         <div v-if="isFetching">Loading....</div>
         <div v-if="question">
             <h3>{{question.question}}</h3>
