@@ -1,27 +1,32 @@
 <template>
     <div>
         <h2>Quiz</h2>
-        <div v-if="isFetching">Loading....</div>
-        <div v-if="question">
-            <h3>{{question.question}}</h3>
-            <ol class="questions">
+        <div v-show="isFetching">Loading....</div>
+        <div class="question-container" v-if="question">
+            <h3 class="question-container__title">{{question.question}}</h3>
+            <ol class="answers">
                 <li 
-                    :style="givenAnswers[currentStep] === name ? 'color: red' : 'color: black'" 
+                    :style="givenAnswers[currentStep] === name && 'color: #425B6E; border-color: #87ECFA; background: #fafafa;'" 
                     v-for="(value, name) in question.answers" 
                     v-show="value"
                     :key="`${value}-${name}`"
                     @click="markAnswer(name)"
                 >
-                    {{value}}
+                    <span>{{value}}</span>
                 </li>
             </ol>
-            <p>Question: {{currentStep + 1}} out of {{questions.length}}</p>
-            <button v-if="currentStep <= questions.length" @click="goToNextQuestion" :disabled="!givenAnswers[currentStep]">Next</button>
+            <div class="question-container__bottom">
+                <div class="bottom__indicator">Question: {{currentStep + 1}} out of {{questions.length}}</div>
+                <button v-if="currentStep <= questions.length" @click="goToNextQuestion" :disabled="!givenAnswers[currentStep]">Next</button>
+            </div>
         </div>
         <div v-if="currentStep + 1 > questions.length">
-            Your answers:
-            {{givenAnswers}}
-            Correct: {{points}} / {{questions.length}}
+            <div class="result__answers">
+                Your answers: <br/>
+                {{givenAnswers}}
+            </div>
+            <div class="result__score">Correct: {{points}} / {{questions.length}}</div>
+            <div class="result__conclusion">{{this.makeConclusion(this.points)}}</div>
             <button @click="resetQuiz">Try again</button>
         </div>
     </div>
@@ -99,6 +104,15 @@ export default class Quiz extends Vue {
         }
     }
 
+    public makeConclusion(points: number) {
+        return (
+            points < 3 ? 'Are you serious?' :
+            points < 5 ? 'Not even trying...' :
+            points < 8 ? 'OK...ish' :
+            'Enough'
+        );
+    }
+
     @Watch('currentStep')
     public countPoints() {
         let points = 0;
@@ -122,8 +136,72 @@ export default class Quiz extends Vue {
 </script>
 
 <style lang="scss">
-    .questions > li {
+    .question-container { 
+        max-width: 1200px;
+        padding: 1rem 3rem;
+        margin: 3rem auto 0;
+    }
+    
+    .question-container__title {
+        margin-bottom: 2rem;
+    }
+    
+    .question-container__bottom {
+        margin-top: 3rem;
+    }
+
+    .bottom__indicator { 
+        margin-bottom: 1rem;
+    }
+    
+    .answers > li {
+        position: relative;
         cursor: pointer;
         margin: 0.5rem 0;
+        
+        border: 2px solid #85B6DE;
+        border-radius: 10px;
+        padding: 1rem 2rem;
+
+        list-style: none;
+
+        &:hover {
+            transition: border .5s ease;
+            border: 2px solid #87ECFA;
+
+                &::before {
+                    transition: background-color 0.3s ease;
+                    background-color: #87ECFA;
+                }
+            
+        } 
+
+        &:first-child {
+            counter-reset:index;
+        }
+
+        &::before {
+            content: counter(index, upper-alpha) '.';
+            counter-increment:index;
+            background:  #aac7df;
+            border-radius: 2px;
+            position:absolute;
+            left: 1rem;
+            z-index:10;
+            width: 1.5rem;
+            height: 1.5rem;
+            color: white;
+            font-size: 1.05rem;
+        }
     } 
+    
+    .result__score {
+        font-size: 2rem;
+        font-weight: 600;
+        margin: 1rem 0;
+    }
+
+    .result__conclusion {
+        margin-bottom: 2rem;
+    }
 </style>
