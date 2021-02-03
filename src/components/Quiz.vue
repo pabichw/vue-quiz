@@ -127,6 +127,8 @@ export default class Quiz extends Vue {
 
     public resetQuiz() {
         this.currentStep = 0;
+        this.question = null;
+        this.questions = [];
         this.givenAnswers = [];
         this.fetchQuestions();
         this.setQuestion(0);
