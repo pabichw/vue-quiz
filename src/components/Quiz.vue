@@ -5,7 +5,15 @@
         <div v-if="question">
             <h3>{{question.question}}</h3>
             <ol class="questions">
-                <li :style="givenAnswers[currentStep] === name ? 'color: red' : 'color: black'" v-for="(value, name) in question.answers" :key="`${value}-${name}`" @click="markAnswer(name)">{{value}}</li>
+                <li 
+                    :style="givenAnswers[currentStep] === name ? 'color: red' : 'color: black'" 
+                    v-for="(value, name) in question.answers" 
+                    v-show="value"
+                    :key="`${value}-${name}`"
+                    @click="markAnswer(name)"
+                >
+                    {{value}}
+                </li>
             </ol>
             <p>Question: {{currentStep + 1}} out of {{questions.length}}</p>
             <button v-if="currentStep <= questions.length" @click="goToNextQuestion" :disabled="!givenAnswers[currentStep]">Next</button>
